@@ -4,10 +4,8 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 // URL
-//（テストデータ）
-const uri = 'http://localhost/gemini-php/data/test_recipe.json';
-// (作成プログラムの APIURL)
-// const uri = 'http://localhost/gemini-php/ai_recipe.php';
+// AI生成アプリのURL
+const uri = 'http://localhost/gemini-php/api/ai_recipe.php';
 
 const createRecipe = async () => {
     await fetch(uri)
