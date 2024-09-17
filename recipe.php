@@ -13,7 +13,7 @@
         
         <div class="flex justify-center mb-8">
             <button id="fetchRecipe" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-                レシピを取得
+                AIレシピ作成
             </button>
         </div>
 
