@@ -2,22 +2,33 @@
 // env.php を読み込み
 require_once '../env.php';
 
+$posts = json_decode(file_get_contents('php://input'), true);
+
 // Gemini APIの場合
-// $data = createByAI();
+// $data = createByAI($posts);
 
 // テストデータの場合
 $data = testData();
 header('Content-Type: application/json');
 echo $data;
 
-function createByAI()
+function createByAI($conditions)
 {
+    if (!$conditions) return;
+
     // Google APIキー
     $api_key = GEMINI_API_KEY;
 
-    $prompot = "つぎの条件で旅行プランを作成";
-    $prompot .= "- JSONフォーマット";
-    $prompot .= "- マークダウンは削除";
+    // TODO 欲しいJSONデータがレスポンスされるようにプロンプトを考える    
+    $prompot = "つぎの条件で旅行プランをJSONのみでレスポンス" . PHP_EOL;
+    $prompot .= "departure: {$conditions['departure']}" . PHP_EOL;
+    $prompot .= "destination: {$conditions['destination']}" . PHP_EOL;
+    $prompot .= "departureDate: {$conditions['destination']}" . PHP_EOL;
+    $prompot .= "arrivalDate: {$conditions['destination']}" . PHP_EOL;
+    $prompot .= "budget: {$conditions['budget']}" . PHP_EOL;
+    $prompot .= "keywords: {$conditions['keywords']}" . PHP_EOL;
+    $prompot .= "JSONテンプレート" . PHP_EOL;
+    $prompot .= template();
 
     $data = [
         'contents' => [
@@ -169,4 +180,53 @@ function testData()
     ]
 }';
     return $data;
+}
+
+
+function template()
+{
+    $template = '
+{
+        "departure": "xxxx",
+        "destination": "xxxx",
+        "departureDate": "xxxx-xx-xx",
+        "arrivalDate": "xxxx-xx-xx",
+        "budget": "xxxxxx",
+        "keywords": "xxxx, xxxx, xxxx",
+        "planItems": [
+            [
+                {
+                    "date": "xxxx-xx-xx",
+                    "transportation": "xxxx",
+                    "place": "xxxx",
+                    "activity": "xxxx",
+                    "memo": "xxxxxxxx"
+                },
+                {
+                    "date": "xxxx-xx-xx",
+                    "transportation": "xxxx",
+                    "place": "xxxx",
+                    "activity": "xxxx",
+                    "memo": "xxxxxxxx"
+                }
+            ],
+            [
+                {
+                    "date": "xxxx-xx-xx",
+                    "transportation": "xxxx",
+                    "place": "xxxx",
+                    "activity": "xxxx",
+                    "memo": "xxxxxxxx"
+                },
+                {
+                    "date": "xxxx-xx-xx",
+                    "transportation": "xxxx",
+                    "place": "xxxx",
+                    "activity": "xxxx",
+                    "memo": "xxxxxxxx"
+                }
+            ]
+        ]
+    }';
+    return $template;
 }

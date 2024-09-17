@@ -12,10 +12,10 @@ $fromLang = isset($postData['fromLang']) ? $postData['fromLang'] : null;
 $toLang = isset($postData['toLang']) ? $postData['toLang'] : null;
 
 // Gemini APIの場合
-// $data = createByAI($transcript, $fromLang, $toLang);
+$translate = createByAI($transcript, $fromLang, $toLang);
 
 // テストデータの場合
-$translate = testTranslateData();
+// $translate = testTranslateData();
 
 $data['transcript'] = $transcript;
 $data['translate'] = $translate;

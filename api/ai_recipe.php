@@ -3,21 +3,27 @@
 require_once '../env.php';
 
 // Gemini APIの場合
-// $data = createByAI();
+$posts = json_decode(file_get_contents('php://input'), true);
+$data = createByAI($posts);
 
 // テストデータの場合
-$data = testData();
+// $data = testData();
+
 header('Content-Type: application/json');
 echo $data;
 
-function createByAI()
+function createByAI($conditions)
 {
     // Google APIキー
     $api_key = GEMINI_API_KEY;
 
-    $prompot = "今日の夕食のレシピを作成";
-    $prompot .= "- JSONフォーマット";
-    $prompot .= "- マークダウンは削除";
+    // TODO 欲しいJSONデータがレスポンスされるようにプロンプトを考える
+    $prompot = "つぎの条件でレシピをJSONのみでレスポンス" . PHP_EOL;
+    $prompot .= "ジャンル: {$conditions['genre']}" . PHP_EOL;
+    $prompot .= "時間帯: {$conditions['time']}" . PHP_EOL;
+    $prompot .= "キーワード: {$conditions['keywords']}" . PHP_EOL;
+    $prompot .= "JSONテンプレート" . PHP_EOL;
+    $prompot .= template();
 
     $data = [
         'contents' => [
@@ -149,4 +155,37 @@ function testData()
     ]
   }';
     return $data;
+}
+
+
+function template()
+{
+    $template = '
+    {
+    "title": "xxxxxxxx",
+    "description": "xxxxxxxxxxxx",
+    "genre": "xxxx",
+    "keywords": "xxx,xxx,xxx,xxx",
+    "ingredients": [
+        {
+            "name": "xxxx",
+            "quantity": "xxxx",
+        },
+        {
+            "name": "xxxx",
+            "quantity": "xxxx",
+        }
+    ]
+    "steps": [
+        {
+            "stepNumber": 1,
+            "instruction": "xxxx",
+        },
+        {
+            "stepNumber": 2,
+            "instruction": "xxxx",
+        }
+    ]
+}';
+    return $template;
 }
