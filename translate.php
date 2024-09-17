@@ -22,6 +22,11 @@
                 <h2 class="text-xl font-semibold mb-4 text-gray-800">音声入力結果</h2>
                 <p id="result" class="text-gray-700">ここに音声入力の結果が表示されます...</p>
             </div>
+
+            <div>
+                <ul id="history">
+                </ul>
+            </div>
         </div>
     </div>
 
