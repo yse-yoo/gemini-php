@@ -2,15 +2,6 @@
 // env.php を読み込み
 require_once '../env.php';
 
-const languages = [
-    ['code' => 'ja-JP', 'name' => 'Japanese'],
-    ['code' => 'en-US', 'name' => 'English'],
-    ['code' => 'fr-FR', 'name' => 'French'],
-    ['code' => 'es-ES', 'name' => 'Spanish'],
-    ['code' => 'de-DE', 'name' => 'German'],
-    ['code' => 'zh-CN', 'name' => 'Chinese'],
-    ['code' => 'vi-VN', 'name' => 'Vietnam'],
-];
 
 // PHPでPOSTリクエストからデータを受け取る
 $postData = json_decode(file_get_contents('php://input'), true);
@@ -21,7 +12,7 @@ $fromLang = isset($postData['fromLang']) ? $postData['fromLang'] : null;
 $toLang = isset($postData['toLang']) ? $postData['toLang'] : null;
 
 // Gemini APIの場合
-// $data = createByAI();
+// $data = createByAI($transcript, $fromLang, $toLang);
 
 // テストデータの場合
 $translate = testTranslateData();
@@ -35,7 +26,17 @@ header('Content-Type: application/json');
 $json = json_encode($data);
 echo $json;
 
-function getLanguageByCode($code, $languages) {
+function getLanguageByCode($code)
+{
+    $languages = [
+        ['code' => 'ja-JP', 'name' => 'Japanese'],
+        ['code' => 'en-US', 'name' => 'English'],
+        ['code' => 'fr-FR', 'name' => 'French'],
+        ['code' => 'es-ES', 'name' => 'Spanish'],
+        ['code' => 'de-DE', 'name' => 'German'],
+        ['code' => 'zh-CN', 'name' => 'Chinese'],
+        ['code' => 'vi-VN', 'name' => 'Vietnam'],
+    ];
     foreach ($languages as $language) {
         if ($language['code'] === $code) {
             return $language['name'];
@@ -48,6 +49,9 @@ function createByAI($transcript, $fromLang, $toLang)
 {
     // Google APIキー
     $api_key = GEMINI_API_KEY;
+
+    $fromLang = getLanguageByCode($fromLang);
+    $toLang = getLanguageByCode($toLang);
 
     $prompot = "Please translate from {$fromLang} to {$toLang} 
     without bracket character.
