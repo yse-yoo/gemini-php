@@ -62,98 +62,32 @@ function createByAI($conditions)
 function testData()
 {
     $data = '
-  {
-    "name": "チキンと野菜の炒め物",
-    "description": "簡単に作れる、おいしいチキンと野菜の炒め物。",
-    "ingredients": [
-      {
-        "name": "鶏むね肉",
-        "amount": "1枚",
-        "unit": "",
-        "notes": "一口大に切る"
-      },
-      {
-        "name": "ピーマン",
-        "amount": "2個",
-        "unit": "",
-        "notes": "種を取り、細切りにする"
-      },
-      {
-        "name": "玉ねぎ",
-        "amount": "1/2個",
-        "unit": "",
-        "notes": "薄切りにする"
-      },
-      {
-        "name": "ニンジン",
-        "amount": "1本",
-        "unit": "",
-        "notes": "薄切りにする"
-      },
-      {
-        "name": "ブロッコリー",
-        "amount": "1/2株",
-        "unit": "",
-        "notes": "小房に分ける"
-      },
-      {
-        "name": "醤油",
-        "amount": "大さじ2",
-        "unit": "",
-        "notes": ""
-      },
-      {
-        "name": "酒",
-        "amount": "大さじ1",
-        "unit": "",
-        "notes": ""
-      },
-      {
-        "name": "砂糖",
-        "amount": "小さじ1",
-        "unit": "",
-        "notes": ""
-      },
-      {
-        "name": "ごま油",
-        "amount": "大さじ1",
-        "unit": "",
-        "notes": ""
-      },
-      {
-        "name": "塩コショウ",
-        "amount": "少々",
-        "unit": "",
-        "notes": ""
-      }
-    ],
-    "instructions": [
-      {
-        "step": "鶏むね肉に塩コショウを振る。",
-        "notes": ""
-      },
-      {
-        "step": "フライパンにごま油を熱し、鶏むね肉を炒める。",
-        "notes": ""
-      },
-      {
-        "step": "鶏むね肉に火が通ったら、玉ねぎ、ピーマン、ニンジンを炒める。",
-        "notes": ""
-      },
-      {
-        "step": "野菜がしんなりしてきたら、ブロッコリーを加えて炒める。",
-        "notes": ""
-      },
-      {
-        "step": "醤油、酒、砂糖を加えて炒め合わせる。",
-        "notes": ""
-      },
-      {
-        "step": "全体に味が馴染んだら完成。",
-        "notes": ""
-      }
-    ]
-  }';
+    {
+        "title": "チキンカレー",
+        "description": "簡単で美味しいチキンカレーのレシピです。",
+        "genre": "カレー",
+        "keywords": "チキン,カレー,簡単,スパイス",
+        "ingredients": [
+            {
+                "name": "鶏肉",
+                "quantity": "200g"
+            },
+            {
+                "name": "玉ねぎ",
+                "quantity": "1個"
+            }
+        ],
+        "steps": [
+            {
+                "stepNumber": 1,
+                "instruction": "鶏肉を一口大に切る。"
+            },
+            {
+                "stepNumber": 2,
+                "instruction": "玉ねぎをみじん切りにする。"
+            }
+        ]
+    }';
     return $data;
 }
 
@@ -169,21 +103,21 @@ function template()
     "ingredients": [
         {
             "name": "xxxx",
-            "quantity": "xxxx",
+            "quantity": "xxxx"
         },
         {
             "name": "xxxx",
-            "quantity": "xxxx",
+            "quantity": "xxxx"
         }
     ]
     "steps": [
         {
             "stepNumber": 1,
-            "instruction": "xxxx",
+            "instruction": "xxxx"
         },
         {
             "stepNumber": 2,
-            "instruction": "xxxx",
+            "instruction": "xxxx"
         }
     ]
 }';

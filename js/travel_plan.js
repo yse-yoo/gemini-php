@@ -1,7 +1,23 @@
-const createPlan = () => {
+const createPlan = async () => {
+    // TODO: 条件を変える
+    var posts = {
+        "departure": "東京",
+        "destination": "福岡",
+        "departureDate": "2024/09/20",
+        "arrivalDate": "2024/09/21",
+        "budget": 30000,
+        "keywords": "グルメ, ゆったり"
+    }
+
     // Gemini AI生成アプリ(PHP)にアクセス
     const uri = 'http://localhost/gemini-php/api/ai_travel_plan.php'
-    fetch(uri)
+    await fetch(uri, {
+        method: 'POST',  // POSTリクエストを指定
+        headers: {
+            'Content-Type': 'application/json'  // JSON形式で送信するためのヘッダー
+        },
+        body: JSON.stringify(posts)  // 送信するデータをJSON形式に変換
+    })
         .then(response => {
             if (!response.ok) {
                 throw new Error('Network response was not ok');
