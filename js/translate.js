@@ -69,15 +69,53 @@ const translate = async (transcript, fromLang, toLang) => {
 // 翻訳結果を表示
 const renderTranslation = (translationData) => {
     addTranslationToHistory(translationData);
+    speakTranslation(translationData.translate); // 翻訳結果を読み上げる
 };
 
 // 翻訳履歴を追加
 const addTranslationToHistory = (result) => {
     const historyElement = document.getElementById('history');
-    const toLang = document.createElement('div');
-    toLang.classList.add('my-1');
 
+    // 翻訳結果を格納するdivを作成
+    const translationDiv = document.createElement('div');
+    translationDiv.classList.add('translation-item', 'my-1');
+
+    // 翻訳結果テキストを表示する要素を作成
+    const translationText = document.createElement('span');
     const translate = result.translate ? result.translate : "Translate error.";
-    toLang.innerHTML = translate;
-    historyElement.appendChild(toLang);
+    translationText.innerHTML = translate;
+
+    // 再生ボタンを作成
+    const playButton = document.createElement('button');
+    playButton.innerText = '再生';
+    playButton.classList.add('play-btn', 'text-xs', 'rounded', 'mx-2', 'px-3', 'py-1', 'bg-blue-500', 'text-white');
+
+    // 再生ボタンのクリックイベント
+    playButton.addEventListener('click', () => {
+        speakTranslation(translate); // クリックされた翻訳結果を読み上げ
+    });
+
+    // 各要素を翻訳結果divに追加
+    translationDiv.appendChild(translationText);
+    translationDiv.appendChild(playButton);
+
+    // 履歴に翻訳結果divを追加
+    historyElement.appendChild(translationDiv);
+};
+
+const playText = () => {
+    if (lastTranslation) {
+        speakTranslation(lastTranslation); // 最後の翻訳結果を読み上げ
+    } else {
+        console.log('再生する翻訳結果がありません');
+    }
+}
+
+
+// 翻訳結果を音声で読み上げ
+const speakTranslation = (text) => {
+    const synth = window.speechSynthesis;
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = toLangSelect.value; // 翻訳先の言語で読み上げ
+    synth.speak(utterance);
 };
