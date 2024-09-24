@@ -1,89 +1,83 @@
-document.addEventListener('DOMContentLoaded', () => {
-    const startButton = document.getElementById('startButton');
-    const resultElement = document.getElementById('result');
-
-    // 音声認識が利用できるか確認
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    if (!SpeechRecognition) {
-        alert("このブラウザは音声認識に対応していません。Google Chromeなど最新のブラウザを使用してください。");
-        return;
-    }
-
-    const recognition = new SpeechRecognition();
-    recognition.lang = 'ja-JP'; // 日本語対応
-
-    // 音声認識が開始されたとき
-    recognition.onstart = () => {
-        resultElement.textContent = "音声認識中...";
-    };
-
-    const fromLang = 'js-JP';
-    const toLang = 'en-US';
-    // 音声認識が終了したとき
-    recognition.onresult = (event) => {
-        const transcript = event.results[0][0].transcript; // 音声認識結果
-        resultElement.textContent = transcript; // 結果を表示
-
-        // 翻訳
-        translate(transcript, fromLang, toLang);
-    };
-
-    // エラーハンドリング
-    recognition.onerror = (event) => {
-        resultElement.textContent = `エラーが発生しました: ${event.error}`;
-    };
-
-    // ボタンがクリックされたとき、音声認識を開始
-    startButton.addEventListener('click', () => {
-        recognition.start();
-    });
-});
-
-// URL
-// AI生成アプリのURL
+const startButton = document.getElementById('startButton');
+const resultElement = document.getElementById('result');
+const statusElement = document.getElementById('status');
+const fromLangSelect = document.getElementById('fromLang');
+const toLangSelect = document.getElementById('toLang');
 const uri = 'http://localhost/gemini-php/api/ai_translate.php';
 
+SpeechRecognition = webkitSpeechRecognition || SpeechRecognition;
+const recognition = new SpeechRecognition();
+recognition.interimResults = false;
+
+recognition.onstart = () => {
+    resultElement.textContent = "音声認識中...";
+};
+
+recognition.onresult = (event) => {
+    console.log('onresult')
+    var transcript = event.results[0][0].transcript;
+    resultElement.textContent = transcript;
+    translate(transcript, fromLangSelect.value, toLangSelect.value);
+}
+
+recognition.onend = () => {
+    console.log('音声認識が終了しました');
+    statusElement.textContent = "";
+};
+
+recognition.onerror = (event) => {
+    statusElement.textContent = `エラーが発生しました: ${event.error}`;
+};
+
+// ボタンがクリックされたとき、音声認識を開始
+const startSpeech = () => {
+    console.log("Lang: ", fromLangSelect.value);
+    recognition.lang = fromLangSelect.value;
+    recognition.start(); // 音声認識を開始
+}
+
 const translate = async (transcript, fromLang, toLang) => {
+    statusElement.textContent = "翻訳中...";
+
     await fetch(uri, {
-        method: 'POST',  // POSTリクエストを指定
+        method: 'POST',
         headers: {
-            'Content-Type': 'application/json'  // JSON形式で送信するためのヘッダー
+            'Content-Type': 'application/json'
         },
         body: JSON.stringify({
             transcript: transcript,
             fromLang: fromLang,
             toLang: toLang
-        })  // 送信するデータをJSON形式に変換
+        })
     })
         .then(response => {
+            statusElement.textContent = "";
             if (!response.ok) {
                 throw new Error('Network response was not ok');
             }
-            return response.json();  // サーバーからのレスポンスをJSON形式で取得
+            return response.json();
         })
-        .then(translationData => {
-            console.log(translationData);
-            // 翻訳結果を処理する関数を呼び出す (必要に応じて)
-            renderTranslation(translationData);
+        .then(data => {
+            console.log(data)
+            renderTranslation(data);
         })
         .catch(error => {
             console.error('Fetch error:', error);
         });
 };
 
+// 翻訳結果を表示
 const renderTranslation = (translationData) => {
     addTranslationToHistory(translationData);
 };
 
-const addTranslationToHistory = (translationData) => {
-    const listItem = document.createElement('li');
-    listItem.classList.add('bg-gray-200', 'p-2', 'my-2', 'rounded');
-
-    // 翻訳結果をHTMLに表示
-    listItem.innerHTML = `
-        <p><strong>Translated:</strong> ${translationData.translate}</p>
-    `;
-
+// 翻訳履歴を追加
+const addTranslationToHistory = (result) => {
     const historyElement = document.getElementById('history');
-    historyElement.appendChild(listItem);
+    const toLang = document.createElement('div');
+    toLang.classList.add('my-1');
+
+    const translate = result.translate ? result.translate : "Translate error.";
+    toLang.innerHTML = translate;
+    historyElement.appendChild(toLang);
 };

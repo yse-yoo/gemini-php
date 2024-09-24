@@ -6,9 +6,9 @@ document.addEventListener('DOMContentLoaded', function () {
 const createRecipe = async () => {
     // TODO: 条件を変える
     var posts = {
-        "genre": "イタリアン",
+        "genre": "中華",
         "time": "昼食",
-        "keywords": "さっぱり,簡単,パスタ"
+        "keywords": "さっぱり,簡単"
     }
 
     // Gemini AI生成アプリ(PHP)にアクセス

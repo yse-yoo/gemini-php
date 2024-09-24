@@ -2,11 +2,11 @@ const createPlan = async () => {
     // TODO: 条件を変える
     var posts = {
         "departure": "東京",
-        "destination": "福岡",
+        "destination": "ラスベガス",
         "departureDate": "2024/09/20",
-        "arrivalDate": "2024/09/21",
+        "arrivalDate": "2024/09/23",
         "budget": 30000,
-        "keywords": "グルメ, ゆったり"
+        "keywords": "グルメ, カジノ"
     }
 
     // Gemini AI生成アプリ(PHP)にアクセス
