@@ -11,13 +11,13 @@ const recognition = new SpeechRecognition();
 recognition.interimResults = false;
 
 recognition.onstart = () => {
-    resultElement.textContent = "音声認識中...";
+    statusElement.textContent = "音声認識中...";
 };
 
 recognition.onresult = (event) => {
     console.log('onresult')
     var transcript = event.results[0][0].transcript;
-    resultElement.textContent = transcript;
+    resultElement.value = transcript;
     translate(transcript, fromLangSelect.value, toLangSelect.value);
 }
 
@@ -121,3 +121,29 @@ const speakTranslation = (text) => {
     console.log(toLangSelect.value);
     synth.speak(utterance);
 };
+
+const swapLanguages = () => {
+    const fromLang = fromLangSelect.value;
+    const toLang = toLangSelect.value;
+
+    // 入れ替える
+    fromLangSelect.value = toLang;
+    toLangSelect.value = fromLang;
+};
+
+
+/**
+ * キーボード操作
+ */
+document.addEventListener('keydown', (event) => {
+    // 音声入力
+    if (event.code === 'Space') {
+        event.preventDefault();
+        startSpeech();
+    }
+    // 言語を入れ替える
+    if (event.code === 'KeyL') {
+        event.preventDefault();
+        swapLanguages();
+    }
+});

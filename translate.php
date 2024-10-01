@@ -45,8 +45,8 @@
             </div>
 
             <div class="bg-white shadow-md rounded-lg p-6 w-full max-w-lg">
-                <h2 class="text-xl font-semibold mb-4 text-gray-800">音声入力</h2>
-                <p id="result" class="text-gray-700">ここに音声入力の結果が表示されます...</p>
+                <h2 class="text-xl font-semibold mb-4 text-gray-800">テキスト</h2>
+                <input id="result" class="p-2 w-full rounded text-gray-700 border">
                 <p id="status"></p>
             </div>
 
