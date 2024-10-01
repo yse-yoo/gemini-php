@@ -21,21 +21,21 @@ function createByAI($conditions)
     $api_key = GEMINI_API_KEY;
 
     // TODO 欲しいJSONデータがレスポンスされるようにプロンプトを考える    
-    $prompot = "つぎの条件で旅行プランをJSONのみでレスポンス" . PHP_EOL;
-    $prompot .= "departure: {$conditions['departure']}" . PHP_EOL;
-    $prompot .= "destination: {$conditions['destination']}" . PHP_EOL;
-    $prompot .= "departureDate: {$conditions['destination']}" . PHP_EOL;
-    $prompot .= "arrivalDate: {$conditions['destination']}" . PHP_EOL;
-    $prompot .= "budget: {$conditions['budget']}" . PHP_EOL;
-    $prompot .= "keywords: {$conditions['keywords']}" . PHP_EOL;
-    $prompot .= "JSONテンプレート" . PHP_EOL;
-    $prompot .= template();
+    $prompt = "つぎの条件で旅行プランをJSONのみでレスポンス" . PHP_EOL;
+    $prompt .= "departure: {$conditions['departure']}" . PHP_EOL;
+    $prompt .= "destination: {$conditions['destination']}" . PHP_EOL;
+    $prompt .= "departureDate: {$conditions['destination']}" . PHP_EOL;
+    $prompt .= "arrivalDate: {$conditions['destination']}" . PHP_EOL;
+    $prompt .= "budget: {$conditions['budget']}" . PHP_EOL;
+    $prompt .= "keywords: {$conditions['keywords']}" . PHP_EOL;
+    $prompt .= "JSONテンプレート" . PHP_EOL;
+    $prompt .= template();
 
     $data = [
         'contents' => [
             [
                 'parts' => [
-                    ['text' => $prompot],
+                    ['text' => $prompt],
                 ]
             ]
         ]

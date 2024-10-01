@@ -52,7 +52,7 @@ function createByAI($transcript, $fromLang, $toLang)
     $fromLang = getLanguageByCode($fromLang);
     $toLang = getLanguageByCode($toLang);
 
-    $prompot = "Please translate from {$fromLang} to {$toLang} 
+    $prompt = "Please translate from {$fromLang} to {$toLang} 
     without bracket character.
     If it cannot be translated, 
     please return it as it cannot be translated in {$toLang}.
@@ -62,7 +62,7 @@ function createByAI($transcript, $fromLang, $toLang)
         'contents' => [
             [
                 'parts' => [
-                    ['text' => $prompot],
+                    ['text' => $prompt],
                 ]
             ]
         ]

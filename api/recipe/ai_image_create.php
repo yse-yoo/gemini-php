@@ -2,11 +2,11 @@
 // env.php を読み込み
 require_once '../../env.php';
 
-// JSONデータ取得
-$posts = json_decode(file_get_contents('php://input'), true);
+// 画像データ取得
+$image = getImage();
 
 // Gemini APIの場合
-$data = createByAI($posts);
+$data = createByAI($image);
 
 // テストデータの場合
 // $data = testData();
@@ -15,19 +15,38 @@ header('Content-Type: application/json');
 echo $data;
 
 /**
+ * 画像取得
+ */
+function getImage()
+{
+    // アップロードされたファイルが存在し、エラーがないか確認
+    if (isset($_FILES['image']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
+        $fileTmpPath = $_FILES['image']['tmp_name'];
+        $fileType = $_FILES['image']['type'];
+
+        // 画像の種類をチェック
+        $allowedFileTypes = ['image/jpeg', 'image/png', 'image/gif'];
+        if (!in_array($fileType, $allowedFileTypes)) {
+            echo json_encode(['error' => '許可されていないファイル形式です。JPEG, PNG, GIFのみアップロード可能です。']);
+            exit;
+        }
+        $data = ['path' => $fileTmpPath, 'mime_type' => $fileType];
+        return $data;
+    }
+}
+
+/**
  * Gemini API処理
  */
-function createByAI($conditions)
+function createByAI($image)
 {
     // プロンプト作成
     // TODO 欲しいJSONデータがレスポンスされるようにプロンプトを考える
-    $prompt = "つぎの条件でレシピをJSONのみでレスポンス" . PHP_EOL;
-    $prompt .= "ジャンル: {$conditions['genre']}" . PHP_EOL;
-    $prompt .= "時間帯: {$conditions['time']}" . PHP_EOL;
-    $prompt .= "キーワード: {$conditions['keywords']}" . PHP_EOL;
-    $prompt .= "JSONテンプレート:" . PHP_EOL;
+    $prompt = "画像から料理レシピを作成（日本語）し、JSONフォーマットでレスポンス" . PHP_EOL;
     $prompt .= template();
 
+    $image_base64 = base64_encode(file_get_contents($image['path']));
+    $mime_type = $image['mime_type'];
 
     // データ作成
     $data = [
@@ -35,6 +54,12 @@ function createByAI($conditions)
             [
                 'parts' => [
                     ['text' => $prompt],
+                    [
+                        'inline_data' => [
+                            'mime_type' => $mime_type,
+                            'data' => $image_base64
+                        ]
+                    ]
                 ]
             ]
         ]

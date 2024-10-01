@@ -1,5 +1,6 @@
 // TODO: URLカスタマイズ
 const aiCreateUri = 'http://localhost/gemini-php/api/recipe/ai_create.php';
+const aiImageCreateUri = 'http://localhost/gemini-php/api/recipe/ai_image_create.php';
 const saveUri = 'http://localhost/gemini-php/api/recipe/save.php';
 
 var keywordList = [];
@@ -88,10 +89,44 @@ const createRecipe = async () => {
             console.error('Fetch error:', error);
         })
         .finally(() => {
-            hideLoading();  // ローディング表示終了
+            hideLoading();
         });
 };
 
+const createImageRrecipe = async () => {
+    const imageInput = document.getElementById('imageInput');
+    const file = imageInput.files[0];
+
+    if (!file) {
+        alert("画像を選択してください");
+        return;
+    }
+
+    const formData = new FormData();
+    formData.append('image', file);
+
+    showLoading();
+    await fetch(aiImageCreateUri, {
+        method: 'POST',
+        body: formData,
+    })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log(data);
+            renderRecipe(data);
+        })
+        .catch(error => {
+            console.error('Fetch error:', error);
+        })
+        .finally(() => {
+            hideLoading();
+        });
+}
 
 const renderRecipe = (data) => {
     // レシピデータ一時保存
