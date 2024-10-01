@@ -1,22 +1,25 @@
 <?php
 // env.php を読み込み
-require_once '../env.php';
+require_once '../../env.php';
+
+// JSONデータ取得
+$posts = json_decode(file_get_contents('php://input'), true);
 
 // Gemini APIの場合
-$posts = json_decode(file_get_contents('php://input'), true);
-$data = createByAI($posts);
+// $data = createByAI($posts);
 
 // テストデータの場合
-// $data = testData();
+$data = testData();
 
 header('Content-Type: application/json');
 echo $data;
 
+/**
+ * Gemini API処理
+ */
 function createByAI($conditions)
 {
-    // Google APIキー
-    $api_key = GEMINI_API_KEY;
-
+    // プロンプト作成
     // TODO 欲しいJSONデータがレスポンスされるようにプロンプトを考える
     $prompot = "つぎの条件でレシピをJSONのみでレスポンス" . PHP_EOL;
     $prompot .= "ジャンル: {$conditions['genre']}" . PHP_EOL;
@@ -25,6 +28,8 @@ function createByAI($conditions)
     $prompot .= "JSONテンプレート" . PHP_EOL;
     $prompot .= template();
 
+
+    // データ作成
     $data = [
         'contents' => [
             [
@@ -35,9 +40,13 @@ function createByAI($conditions)
         ]
     ];
 
-    // TODO Gemini AI処理
+    // リクエスト処理
     $ch = curl_init();
-    curl_setopt($ch, CURLOPT_URL, "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=" . $api_key);
+    // Google APIキー で Gemini APIのURL生成
+    $uri = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=" . GEMINI_API_KEY;
+
+    // Gemini AIにリクエスト
+    curl_setopt($ch, CURLOPT_URL, $uri);
     curl_setopt($ch, CURLOPT_POST, true);
     curl_setopt($ch, CURLOPT_HTTPHEADER, [
         'Content-Type: application/json'
@@ -58,6 +67,42 @@ function createByAI($conditions)
     curl_close($ch);
     return $json;
 }
+
+/**
+ * AIの結果フォーマット
+ */
+function template()
+{
+    $template = '
+    {
+    "title": "xxxxxxxx",
+    "description": "xxxxxxxxxxxx",
+    "genre": "xxxx",
+    "keywords": "xxx,xxx,xxx,xxx",
+    "ingredients": [
+        {
+            "name": "xxxx",
+            "quantity": "xxxx"
+        },
+        {
+            "name": "xxxx",
+            "quantity": "xxxx"
+        }
+    ]
+    "steps": [
+        {
+            "stepNumber": 1,
+            "instruction": "xxxx"
+        },
+        {
+            "stepNumber": 2,
+            "instruction": "xxxx"
+        }
+    ]
+}';
+    return $template;
+}
+
 
 function testData()
 {
@@ -89,37 +134,4 @@ function testData()
         ]
     }';
     return $data;
-}
-
-
-function template()
-{
-    $template = '
-    {
-    "title": "xxxxxxxx",
-    "description": "xxxxxxxxxxxx",
-    "genre": "xxxx",
-    "keywords": "xxx,xxx,xxx,xxx",
-    "ingredients": [
-        {
-            "name": "xxxx",
-            "quantity": "xxxx"
-        },
-        {
-            "name": "xxxx",
-            "quantity": "xxxx"
-        }
-    ]
-    "steps": [
-        {
-            "stepNumber": 1,
-            "instruction": "xxxx"
-        },
-        {
-            "stepNumber": 2,
-            "instruction": "xxxx"
-        }
-    ]
-}';
-    return $template;
 }

@@ -1,3 +1,5 @@
+const uri = 'http://localhost/gemini-php/api/travel/ai_create_plan.php'
+
 const createPlan = async () => {
     // TODO: 条件を変える
     var posts = {
@@ -10,7 +12,6 @@ const createPlan = async () => {
     }
 
     // Gemini AI生成アプリ(PHP)にアクセス
-    const uri = 'http://localhost/gemini-php/api/ai_travel_plan.php'
     await fetch(uri, {
         method: 'POST',  // POSTリクエストを指定
         headers: {

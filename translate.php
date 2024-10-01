@@ -25,21 +25,21 @@
                     <label for="fromLang" class="text-gray-800 font-semibold">翻訳前の言語</label>
                     <select id="fromLang"
                         class="bg-white border border-gray-300 rounded-md p-2">
-                        <option value="ja-JP">日本語</option>
-                        <option value="en-US">英語</option>
-                        <option value="fr-FR">フランス語</option>
-                        <option value="de-DE">ドイツ語</option>
-                        <option value="vi-VN">ベトナム語</option>
+                        <option value="ja">日本語</option>
+                        <option value="en">英語</option>
+                        <option value="fr">フランス語</option>
+                        <option value="de">ドイツ語</option>
+                        <option value="vi">ベトナム語</option>
                     </select>
                 </div>
                 <div>
                     <label for="toLang" class="text-gray-800 font-semibold">翻訳後の言語</label>
                     <select id="toLang" class="bg-white border border-gray-300 rounded-md p-2">
-                        <option value="en-US">英語</option>
-                        <option value="ja-UP">日本語</option>
-                        <option value="fr-FR">フランス語</option>
-                        <option value="de-DE">ドイツ語</option>
-                        <option value="vi-VN">ベトナム語</option>
+                        <option value="en">英語</option>
+                        <option value="ja">日本語</option>
+                        <option value="fr">フランス語</option>
+                        <option value="de">ドイツ語</option>
+                        <option value="vi">ベトナム語</option>
                     </select>
                 </div>
             </div>

@@ -1,9 +1,10 @@
+const uri = 'http://localhost/gemini-php/api/translate/ai_translate.php';
+
 const startButton = document.getElementById('startButton');
 const resultElement = document.getElementById('result');
 const statusElement = document.getElementById('status');
 const fromLangSelect = document.getElementById('fromLang');
 const toLangSelect = document.getElementById('toLang');
-const uri = 'http://localhost/gemini-php/api/ai_translate.php';
 
 SpeechRecognition = webkitSpeechRecognition || SpeechRecognition;
 const recognition = new SpeechRecognition();
@@ -117,5 +118,6 @@ const speakTranslation = (text) => {
     const synth = window.speechSynthesis;
     const utterance = new SpeechSynthesisUtterance(text);
     utterance.lang = toLangSelect.value; // 翻訳先の言語で読み上げ
+    console.log(toLangSelect.value);
     synth.speak(utterance);
 };
