@@ -6,10 +6,10 @@ require_once '../../env.php';
 $posts = json_decode(file_get_contents('php://input'), true);
 
 // Gemini APIの場合
-// $data = createByAI($posts);
+$data = createByAI($posts);
 
 // テストデータの場合
-$data = testData();
+// $data = testData();
 
 header('Content-Type: application/json');
 echo $data;

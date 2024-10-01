@@ -1,7 +1,6 @@
 <?php
 // env.php を読み込み
-require_once '../env.php';
-
+require_once '../../env.php';
 
 // PHPでPOSTリクエストからデータを受け取る
 $postData = json_decode(file_get_contents('php://input'), true);

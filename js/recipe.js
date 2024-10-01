@@ -5,6 +5,15 @@ const saveUri = 'http://localhost/gemini-php/api/recipe/save.php';
 var keywordList = [];
 var recipe = {};
 
+// ローディング表示を制御する関数
+const showLoading = () => {
+    document.getElementById('loading').classList.remove('hidden');
+};
+
+const hideLoading = () => {
+    document.getElementById('loading').classList.add('hidden');
+};
+
 document.addEventListener('DOMContentLoaded', function () {
     const keywordInputContainer = document.getElementById('keywordInputContainer');
     const keywordsInput = document.getElementById('keywordsInput');
@@ -45,6 +54,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
 const createRecipe = async () => {
+    showLoading();
+
     const genre = document.getElementById('genre').value;
     const time = document.getElementById('time').value;
     const keywords = keywordList.join(',');
@@ -53,22 +64,21 @@ const createRecipe = async () => {
         "genre": genre,
         "time": time,
         "keywords": keywords
-    }
+    };
     console.log(posts);
 
-    // Gemini AI生成アプリ(PHP)にアクセス
     await fetch(aiCreateUri, {
-        method: 'POST',  // POSTリクエストを指定
+        method: 'POST',
         headers: {
-            'Content-Type': 'application/json'  // JSON形式で送信するためのヘッダー
+            'Content-Type': 'application/json'
         },
-        body: JSON.stringify(posts)  // 送信するデータをJSON形式に変換
+        body: JSON.stringify(posts)
     })
         .then(response => {
             if (!response.ok) {
                 throw new Error('Network response was not ok');
             }
-            return response.json();  // JSONを返す
+            return response.json();
         })
         .then(data => {
             console.log(data);
@@ -76,14 +86,19 @@ const createRecipe = async () => {
         })
         .catch(error => {
             console.error('Fetch error:', error);
+        })
+        .finally(() => {
+            hideLoading();  // ローディング表示終了
         });
-}
+};
+
 
 const renderRecipe = (data) => {
     // レシピデータ一時保存
     recipe = data;
 
     const recipeDiv = document.getElementById('recipe');
+    recipeDiv.innerHTML = '';
 
     // タイトル、説明、ジャンル、キーワードを表示
     const title = `<h2 class="text-3xl font-bold text-gray-800 mb-4">${recipe.title}</h2>`;
@@ -131,6 +146,8 @@ const saveRecipe = async () => {
     }
     console.log('send data:', recipe);
 
+    showLoading();
+
     // レシピデータを保存用APIに送信
     await fetch(saveUri, {
         method: 'POST',
@@ -150,5 +167,8 @@ const saveRecipe = async () => {
         })
         .catch(error => {
             console.error('Save error:', error);
+        })
+        .finally(() => {
+            hideLoading();  // ローディング表示終了
         });
 }
