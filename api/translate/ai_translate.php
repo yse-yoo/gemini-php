@@ -6,17 +6,17 @@ require_once '../../env.php';
 $postData = json_decode(file_get_contents('php://input'), true);
 
 // 送信されてきたデータを取得
-$transcript = isset($postData['transcript']) ? $postData['transcript'] : null;
+$origin = isset($postData['origin']) ? $postData['origin'] : null;
 $fromLang = isset($postData['fromLang']) ? $postData['fromLang'] : null;
 $toLang = isset($postData['toLang']) ? $postData['toLang'] : null;
 
 // Gemini APIの場合
-$translate = createByAI($transcript, $fromLang, $toLang);
+$translate = createByAI($origin, $fromLang, $toLang);
 
 // テストデータの場合
 // $translate = testTranslateData();
 
-$data['transcript'] = $transcript;
+$data['origin'] = $origin;
 $data['translate'] = $translate;
 $data['fromLang'] = $fromLang;
 $data['toLang'] = $toLang;
@@ -44,7 +44,7 @@ function getLanguageByCode($code)
     return null;
 }
 
-function createByAI($transcript, $fromLang, $toLang)
+function createByAI($origin, $fromLang, $toLang)
 {
     // Google APIキー
     $api_key = GEMINI_API_KEY;
@@ -56,7 +56,7 @@ function createByAI($transcript, $fromLang, $toLang)
     without bracket character.
     If it cannot be translated, 
     please return it as it cannot be translated in {$toLang}.
-    \n {$transcript}";
+    \n {$origin}";
 
     $data = [
         'contents' => [
@@ -84,11 +84,11 @@ function createByAI($transcript, $fromLang, $toLang)
     } else {
         $response_data = json_decode($response, true);
         if (isset($response_data['candidates'][0]['content']['parts'][0]['text'])) {
-            $text = $response_data['candidates'][0]['content']['parts'][0]['text'];
+            $translate = $response_data['candidates'][0]['content']['parts'][0]['text'];
         }
     }
     curl_close($ch);
-    return $text;
+    return $translate;
 }
 
 // AIの結果を想定（テストデータ）

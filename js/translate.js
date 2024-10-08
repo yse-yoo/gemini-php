@@ -1,10 +1,13 @@
-const uri = 'http://localhost/gemini-php/api/translate/ai_translate.php';
+const TRANSLATION_URI = 'http://localhost/gemini-php/api/translate/ai_translate.php';
 
 const startButton = document.getElementById('startButton');
 const resultElement = document.getElementById('result');
 const statusElement = document.getElementById('status');
 const fromLangSelect = document.getElementById('fromLang');
 const toLangSelect = document.getElementById('toLang');
+const chatHistoryElement = document.getElementById('chatHistory');
+
+var historyList = [];
 
 SpeechRecognition = webkitSpeechRecognition || SpeechRecognition;
 const recognition = new SpeechRecognition();
@@ -16,9 +19,10 @@ recognition.onstart = () => {
 
 recognition.onresult = (event) => {
     console.log('onresult')
-    var transcript = event.results[0][0].transcript;
-    resultElement.value = transcript;
-    translate(transcript, fromLangSelect.value, toLangSelect.value);
+    var text = event.results[0][0].transcript;
+    resultElement.value = text;
+    addOrigin(text);
+    translate(text, fromLangSelect.value, toLangSelect.value);
 }
 
 recognition.onend = () => {
@@ -37,16 +41,29 @@ const startSpeech = () => {
     recognition.start(); // 音声認識を開始
 }
 
-const translate = async (transcript, fromLang, toLang) => {
+/**
+ * 翻訳イベント
+ */
+const handleTranslate = () => {
+    var text = resultElement.value;
+    addOrigin(text);
+    // addTranslation(text);
+    translate(text, fromLangSelect.value, toLangSelect.value);
+}
+
+/**
+ * 翻訳
+ */
+const translate = async (text, fromLang, toLang) => {
     statusElement.textContent = "翻訳中...";
 
-    await fetch(uri, {
+    await fetch(TRANSLATION_URI, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-            transcript: transcript,
+            origin: text,
             fromLang: fromLang,
             toLang: toLang
         })
@@ -69,39 +86,37 @@ const translate = async (transcript, fromLang, toLang) => {
 
 // 翻訳結果を表示
 const renderTranslation = (translationData) => {
-    addTranslationToHistory(translationData);
+    addTranslation(translationData);
     speakTranslation(translationData.translate); // 翻訳結果を読み上げる
 };
 
+const addOrigin = (text, lang) => {
+    // 翻訳前の吹き出しを作成（左側）
+    const originalMessageDiv = document.createElement('div');
+    originalMessageDiv.classList.add('flex', 'justify-start');
+
+    const originalBubble = document.createElement('div');
+    originalBubble.classList.add('bg-teal-500', 'text-white', 'rounded-lg', 'p-3', 'max-w-xs', 'text-left');
+    originalBubble.innerHTML = text;
+
+    originalMessageDiv.appendChild(originalBubble);
+    chatHistoryElement.appendChild(originalMessageDiv);
+}
+
 // 翻訳履歴を追加
-const addTranslationToHistory = (result) => {
-    const historyElement = document.getElementById('history');
+const addTranslation = (result) => {
+    // 翻訳後の吹き出しを作成（右側）
+    const translationMessageDiv = document.createElement('div');
+    translationMessageDiv.classList.add('flex', 'justify-end');
 
-    // 翻訳結果を格納するdivを作成
-    const translationDiv = document.createElement('div');
-    translationDiv.classList.add('translation-item', 'my-1');
+    const translationBubble = document.createElement('div');
+    translationBubble.classList.add('bg-gray-300', 'text-gray-800', 'rounded-lg', 'p-3', 'max-w-xs', 'text-left');
+    translationBubble.innerHTML = result.translate ? result.translate : "Translation error.";
 
-    // 翻訳結果テキストを表示する要素を作成
-    const translationText = document.createElement('span');
-    const translate = result.translate ? result.translate : "Translate error.";
-    translationText.innerHTML = translate;
+    translationMessageDiv.appendChild(translationBubble);
 
-    // 再生ボタンを作成
-    const playButton = document.createElement('button');
-    playButton.innerText = '再生';
-    playButton.classList.add('play-btn', 'text-xs', 'rounded', 'mx-2', 'px-3', 'py-1', 'bg-blue-500', 'text-white');
-
-    // 再生ボタンのクリックイベント
-    playButton.addEventListener('click', () => {
-        speakTranslation(translate); // クリックされた翻訳結果を読み上げ
-    });
-
-    // 各要素を翻訳結果divに追加
-    translationDiv.appendChild(translationText);
-    translationDiv.appendChild(playButton);
-
-    // 履歴に翻訳結果divを追加
-    historyElement.appendChild(translationDiv);
+    // チャット履歴に追加
+    chatHistoryElement.appendChild(translationMessageDiv);
 };
 
 const playText = () => {
@@ -111,7 +126,6 @@ const playText = () => {
         console.log('再生する翻訳結果がありません');
     }
 }
-
 
 // 翻訳結果を音声で読み上げ
 const speakTranslation = (text) => {
@@ -137,7 +151,7 @@ const swapLanguages = () => {
  */
 document.addEventListener('keydown', (event) => {
     // 音声入力
-    if (event.code === 'Space') {
+    if (event.code === 'KeyI') {
         event.preventDefault();
         startSpeech();
     }
