@@ -46,6 +46,8 @@ const startSpeech = () => {
  */
 const handleTranslate = () => {
     var text = resultElement.value;
+    if (!text) return;
+
     addOrigin(text);
     // addTranslation(text);
     translate(text, fromLangSelect.value, toLangSelect.value);
@@ -145,18 +147,25 @@ const swapLanguages = () => {
     toLangSelect.value = fromLang;
 };
 
+/**
+ * saveHistory
+ */
+const saveHistory = () => { 
+    alert('会話を保存しました');
+}
+
 
 /**
  * キーボード操作
  */
 document.addEventListener('keydown', (event) => {
     // 音声入力
-    if (event.code === 'KeyI') {
+    if (event.ctrlKey && event.code === 'KeyI') {
         event.preventDefault();
         startSpeech();
     }
     // 言語を入れ替える
-    if (event.code === 'KeyL') {
+    if (event.ctrlKey && event.code === 'KeyL') {
         event.preventDefault();
         swapLanguages();
     }
