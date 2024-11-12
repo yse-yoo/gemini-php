@@ -146,12 +146,25 @@ async function sendMessage(message, fromLang, toLang) {
     }
 }
 
+// TODO: Chromeで利用できない
+// 翻訳結果を音声で読み上げ
+const speakTranslation = (text, lang) => {
+    console.log('speakTranslation', text, lang)
+    const synth = window.speechSynthesis;
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = lang;
+    synth.speak(utterance);
+};
 
 // サーバーからのメッセージを受信
 socket.on('message', (msg) => {
     // 他のユーザーからのメッセージを表示
-    addOrigin(msg.original, false); // 翻訳前テキスト
-    addTranslation(msg.translated, false); // 翻訳後テキスト
+    addOrigin(msg.original, false);
+    addTranslation(msg.translated, false);
+
+    // 音声読み上げ
+    // TODO: send chat lang
+    speakTranslation(msg.translated, fromLangSelect.value);
 });
 
 // 音声認識の開始
