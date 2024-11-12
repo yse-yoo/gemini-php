@@ -1,12 +1,20 @@
 <?php
 $langs = [
-    'ja' => 'Japanese',
-    'en' => 'English',
-    'fr' => 'French',
-    'de' => 'German',
-    'zh' => 'Chinese',
-    'vi' => 'Vietnamese',
+    'ja-JP' => 'Japanese',
+    'en-US' => 'English',
+    'fr-FR' => 'French',
+    'de-DE' => 'German',
+    'zh-CN' => 'Chinese',
+    'vi-VN' => 'Vietnamese',
 ];
+
+$defaultFromLang = 'ja-JP';
+$defaultToLang = 'en-US';
+
+function selected($value, $selected)
+{
+    return ($value == $selected) ? 'selected' : '';
+}
 ?>
 
 <!DOCTYPE html>
@@ -30,17 +38,18 @@ $langs = [
             <div class="flex">
                 <div>
                     <label for="fromLang" class="text-gray-800 font-semibold">翻訳前の言語</label>
-                    <select id="fromLang" class="bg-white border border-gray-300 rounded-md p-2">
+                    <select id="fromLang" class="bg-white border border-gray-300 rounded-md p-2" onchange="updateFromLang()">
                         <?php foreach ($langs as $value => $lang): ?>
-                            <option value="<?= $value ?>"><?= $lang ?></option>
+                            <option value="<?= $value ?>" <?= selected($defaultFromLang, $value) ?>><?= $lang ?></option>
                         <?php endforeach ?>
                     </select>
                 </div>
                 <div class="ml-5">
                     <label for="toLang" class="text-gray-800 font-semibold">翻訳後の言語</label>
-                    <select id="toLang" class="bg-white border border-gray-300 rounded-md p-2">
+
+                    <select id="toLang" class="bg-white border border-gray-300 rounded-md p-2" onchange="updateToLang()">
                         <?php foreach ($langs as $value => $lang): ?>
-                            <option value="<?= $value ?>"><?= $lang ?></option>
+                            <option value="<?= $value ?>" <?= selected($defaultToLang, $value) ?>><?= $lang ?></option>
                         <?php endforeach ?>
                     </select>
                 </div>
@@ -52,8 +61,8 @@ $langs = [
             <p id="status" class="text-red-500"></p>
 
             <div class="mt-3 w-full max-w-lg">
-                <input id="result" class="p-2 w-full rounded text-gray-700 border">
-                <button id="sendButton" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-4 rounded">
+                <input id="inputText" class="p-2 w-full rounded text-gray-700 border">
+                <button onclick="sendMessage()" id="sendButton" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-4 rounded">
                     送信
                 </button>
             </div>
@@ -67,7 +76,7 @@ $langs = [
         </div>
     </div>
 
-    <script src="js/chat.js"></script>
+    <script src="js/chat.js" defer></script>
 </body>
 
 </html>

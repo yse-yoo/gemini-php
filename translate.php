@@ -1,17 +1,18 @@
 <?php
 $langs = [
-    'ja' => 'Japanese',
-    'en' => 'English',
-    'fr' => 'French',
-    'de' => 'German',
+    'ja-JP' => 'Japanese',
+    'en-US' => 'English',
+    'fr-FR' => 'French',
+    'de-DE' => 'German',
     'zh' => 'Chinese',
     'vi' => 'Vietnamese',
 ];
-$defaultFromLang = 'ja';
-$defaultToLang = 'en';
+$defaultFromLang = 'ja-JP';
+$defaultToLang = 'en-US';
 
-function selected($value, $selected) {
-    return ($value == $selected)? 'selected' : '';
+function selected($value, $selected)
+{
+    return ($value == $selected) ? 'selected' : '';
 }
 ?>
 
@@ -71,6 +72,11 @@ function selected($value, $selected) {
                 <div id="chatHistory" class="flex flex-col space-y-4">
                     <!-- チャットの吹き出しがここに追加されます -->
                 </div>
+            </div>
+
+
+            <div class="my-4">
+                <button onclick="speakTranslation('Hello')" class="p-2 border border-gray-500 rounded">Test Voice</button>
             </div>
         </div>
     </div>

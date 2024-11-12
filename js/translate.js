@@ -8,7 +8,6 @@ const toLangSelect = document.getElementById('toLang');
 const chatHistoryElement = document.getElementById('chatHistory');
 
 var historyList = [];
-
 SpeechRecognition = webkitSpeechRecognition || SpeechRecognition;
 const recognition = new SpeechRecognition();
 recognition.interimResults = false;
@@ -129,13 +128,20 @@ const playText = () => {
     }
 }
 
+// TODO: Chromeで利用できない
 // 翻訳結果を音声で読み上げ
 const speakTranslation = (text) => {
+    console.log('speakTranslation', text, toLangSelect.value)
     const synth = window.speechSynthesis;
     const utterance = new SpeechSynthesisUtterance(text);
-    utterance.lang = toLangSelect.value; // 翻訳先の言語で読み上げ
-    console.log(toLangSelect.value);
+    utterance.lang = toLangSelect.value;
     synth.speak(utterance);
+
+    synth.addEventListener('voiceschanged', () => {
+        console.log('voice changed')
+        const voice = speechSynthesis.getVoices();
+        console.log(voice);
+    });
 };
 
 const swapLanguages = () => {
@@ -150,7 +156,7 @@ const swapLanguages = () => {
 /**
  * saveHistory
  */
-const saveHistory = () => { 
+const saveHistory = () => {
     alert('会話を保存しました');
 }
 

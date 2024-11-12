@@ -28,13 +28,13 @@ echo $json;
 function getLanguageByCode($code)
 {
     $languages = [
-        ['code' => 'ja', 'name' => 'Japanese'],
-        ['code' => 'en', 'name' => 'English'],
-        ['code' => 'fr', 'name' => 'French'],
-        ['code' => 'es', 'name' => 'Spanish'],
-        ['code' => 'de', 'name' => 'German'],
-        ['code' => 'zh', 'name' => 'Chinese'],
-        ['code' => 'vi', 'name' => 'Vietnam'],
+        ['code' => 'ja-JP', 'name' => 'Japanese'],
+        ['code' => 'en-US', 'name' => 'English'],
+        ['code' => 'fr-FR', 'name' => 'French'],
+        ['code' => 'es-ES', 'name' => 'Spanish'],
+        ['code' => 'de-DE', 'name' => 'German'],
+        ['code' => 'zh-CN', 'name' => 'Chinese'],
+        ['code' => 'vi-VN', 'name' => 'Vietnamese'],
     ];
     foreach ($languages as $language) {
         if ($language['code'] === $code) {
