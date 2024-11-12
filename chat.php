@@ -6,6 +6,7 @@ $langs = [
     'de-DE' => 'German',
     'zh-CN' => 'Chinese',
     'vi-VN' => 'Vietnamese',
+    'ko-KR' => 'Korian',
 ];
 
 $defaultFromLang = 'ja-JP';

@@ -35,6 +35,7 @@ function getLanguageByCode($code)
         ['code' => 'de-DE', 'name' => 'German'],
         ['code' => 'zh-CN', 'name' => 'Chinese'],
         ['code' => 'vi-VN', 'name' => 'Vietnamese'],
+        ['code' => 'ko-KR', 'name' => 'Korian'],
     ];
     foreach ($languages as $language) {
         if ($language['code'] === $code) {
