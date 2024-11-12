@@ -1,7 +1,3 @@
-// TODO：環境に合わせて設定
-const TRANSLATION_URI = "http://localhost/gemini-php/api/translate/ai_translate.php";
-const CHAT_URI = "http://localhost:3000";
-
 // HTML Element
 const startButton = document.getElementById('startButton');
 const inputTextElement = document.getElementById('inputText');
@@ -13,7 +9,7 @@ const chatHistoryElement = document.getElementById('chatHistory');
 // Socket IO開始
 const socket = io(CHAT_URI);
 
-// 音声認識の初期化
+// 音声認識
 var recognition;
 if ('webkitSpeechRecognition' in window) {
     recognition = new webkitSpeechRecognition();
@@ -23,15 +19,21 @@ if ('webkitSpeechRecognition' in window) {
     alert("このブラウザは音声認識をサポートしていません");
 }
 
-recognition.lang = fromLangSelect.value;
+// recognition.lang = fromLangSelect.value;
 recognition.interimResults = false;
+
+recognition.onstart = () => {
+    statusElement.textContent = "音声認識中...";
+};
 
 recognition.onresult = (event) => {
     const text = event.results[0][0].transcript;
     console.log("text:", text)
     if (text) {
-        inputTextElement.value = text;
-        sendMessage(text);
+        // 入力欄のテキストを取得
+        const fromLang = fromLangSelect.value;
+        const toLang = toLangSelect.value;
+        sendMessage(text, fromLang, toLang);
     }
 };
 
@@ -53,9 +55,12 @@ const addOrigin = (text, isOwnMessage = false) => {
         isOwnMessage ? 'bg-teal-500' : 'bg-blue-500',
         'text-white', 'rounded-lg', 'p-3', 'max-w-xs', 'text-left', 'mb-1'
     );
+
+    // 会話作成
     originalBubble.innerHTML = text;
     originalMessageDiv.appendChild(originalBubble);
 
+    // 会話履歴に追加
     chatHistoryElement.appendChild(originalMessageDiv);
 };
 
@@ -69,21 +74,46 @@ const addTranslation = (text, isOwnMessage = false) => {
         isOwnMessage ? 'bg-gray-300' : 'bg-gray-400',
         'text-gray-800', 'rounded-lg', 'p-3', 'max-w-xs', 'text-left'
     );
+
+    // 会話作成
     translationBubble.innerHTML = text;
     translationMessageDiv.appendChild(translationBubble);
 
+    // 会話履歴に追加
     chatHistoryElement.appendChild(translationMessageDiv);
 };
 
-// メッセージをサーバーに送信する関数
-async function sendMessage() {
-    // 入力欄のテキストを取得
-    const message = document.getElementById('inputText').value;
+// fromLang の変更を反映
+function updateFromLang() {
+    recognition.lang = fromLangSelect.value;
+    console.log("音声認識の言語が変更されました:", fromLangSelect.value);
+}
+
+// toLang の変更を反映
+function updateToLang() {
+    console.log("翻訳後の言語が変更されました:", toLangSelect.value);
+}
+
+async function onSendMessage() {
+    const message = inputTextElement.value;
     const fromLang = fromLangSelect.value;
     const toLang = toLangSelect.value;
 
     console.log(message, fromLang, toLang)
-    if (!message) return alert("メッセージを入力してください");
+
+    statusElement.textContent = "";
+    if (!message) {
+        statusElement.textContent = "メッセージを入力してください";
+        return;
+    }
+    await sendMessage(message, fromLang, toLang);
+}
+
+// メッセージをサーバーに送信する関数
+async function sendMessage(message, fromLang, toLang) {
+    if (!message) return;
+    if (!fromLang) return;
+    if (!toLang) return;
 
     // チャットに翻訳前のテキストを追加
     addOrigin(message, true);
@@ -105,43 +135,24 @@ async function sendMessage() {
         const data = await response.json();
         const translatedText = data.translate || "翻訳エラー";
 
-        // 翻訳されたテキストをチャットに追加
-        addTranslation(translatedText, true);
-
-        // 翻訳前と翻訳後のテキストをオブジェクトにまとめてサーバーに送信
         if (translatedText) {
+            // 翻訳されたテキストをチャットに追加
+            addTranslation(translatedText, true);
+            // チャットメッセージ
             socket.emit('message', { original: message, translated: translatedText });
         }
-
-        document.getElementById('inputText').value = '';
     } catch (error) {
         console.error('翻訳エラー:', error);
     }
 }
 
-// fromLang の変更を反映
-function updateFromLang() {
-    recognition.lang = fromLangSelect.value;
-    console.log("音声認識の言語が変更されました:", fromLangSelect.value);
-}
-
-// toLang の変更を反映
-function updateToLang() {
-    console.log("翻訳後の言語が変更されました:", toLangSelect.value);
-}
 
 // サーバーからのメッセージを受信
 socket.on('message', (msg) => {
-    // 他のユーザーからのメッセージを表示（翻訳前を上、翻訳後を下に表示）
+    // 他のユーザーからのメッセージを表示
     addOrigin(msg.original, false); // 翻訳前テキスト
     addTranslation(msg.translated, false); // 翻訳後テキスト
 });
-
-// 音声認識処理
-recognition.onstart = () => {
-    statusElement.textContent = "音声認識中...";
-};
-
 
 // 音声認識の開始
 const startSpeech = () => {

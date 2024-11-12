@@ -56,13 +56,13 @@ function selected($value, $selected)
             </div>
 
             <button id="startButton" class="bg-teal-500 hover:bg-teal-700 text-sm text-white font-bold py-1 px-2 rounded my-2" onclick="startSpeech()">
-                音声入力（ I キー）
+                音声入力
             </button>
             <p id="status" class="text-red-500"></p>
 
-            <div class="mt-3 w-full max-w-lg">
-                <input id="inputText" class="p-2 w-full rounded text-gray-700 border">
-                <button onclick="sendMessage()" id="sendButton" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-4 rounded">
+            <div class="flex mt-3 w-full max-w-lg">
+                <input id="inputText" class="p-2 w-3/4 rounded text-gray-700 border">
+                <button onclick="onSendMessage()" id="sendButton" class="w-1/4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-4 rounded">
                     送信
                 </button>
             </div>
@@ -76,6 +76,7 @@ function selected($value, $selected)
         </div>
     </div>
 
+    <script src="js/env.js" defer></script>
     <script src="js/chat.js" defer></script>
 </body>
 
