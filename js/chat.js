@@ -1,14 +1,17 @@
+// TODO：環境に合わせて設定
 const TRANSLATION_URI = "http://localhost/gemini-php/api/translate/ai_translate.php";
 const CHAT_URI = "http://localhost:3000";
 
-const socket = io(CHAT_URI);
-
+// HTML Element
 const startButton = document.getElementById('startButton');
-const resultElement = document.getElementById('result');
+const inputTextElement = document.getElementById('inputText');
 const statusElement = document.getElementById('status');
 const fromLangSelect = document.getElementById('fromLang');
 const toLangSelect = document.getElementById('toLang');
 const chatHistoryElement = document.getElementById('chatHistory');
+
+// Socket IO開始
+const socket = io(CHAT_URI);
 
 // 音声認識の初期化
 var recognition;
@@ -19,8 +22,26 @@ if ('webkitSpeechRecognition' in window) {
 } else {
     alert("このブラウザは音声認識をサポートしていません");
 }
+
 recognition.lang = fromLangSelect.value;
 recognition.interimResults = false;
+
+recognition.onresult = (event) => {
+    const text = event.results[0][0].transcript;
+    console.log("text:", text)
+    if (text) {
+        inputTextElement.value = text;
+        sendMessage(text);
+    }
+};
+
+recognition.onend = () => {
+    statusElement.textContent = "";
+};
+
+recognition.onerror = (event) => {
+    statusElement.textContent = `エラー: ${event.error}`;
+};
 
 // 翻訳前のテキストを表示
 const addOrigin = (text, isOwnMessage = false) => {
@@ -69,7 +90,7 @@ async function sendMessage() {
 
     // 翻訳を行い、翻訳されたテキストをサーバーに送信
     try {
-        const response  = await fetch(TRANSLATION_URI, {
+        const response = await fetch(TRANSLATION_URI, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -116,47 +137,11 @@ socket.on('message', (msg) => {
     addTranslation(msg.translated, false); // 翻訳後テキスト
 });
 
-
-// テキストの翻訳と送信
-const translateAndSend = async (text, fromLang, toLang) => {
-    statusElement.textContent = "翻訳中...";
-    try {
-        const response = await fetch(TRANSLATION_URI, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ origin: text, fromLang, toLang })
-        });
-        const data = await response.json();
-        const translatedText = data.translate || "翻訳エラー";
-        addTranslation(translatedText);
-
-        // サーバーにメッセージを送信
-        socket.emit('message', translatedText);
-    } catch (error) {
-        console.error('翻訳エラー:', error);
-    } finally {
-        statusElement.textContent = "";
-    }
-};
-
+// 音声認識処理
 recognition.onstart = () => {
     statusElement.textContent = "音声認識中...";
 };
 
-recognition.onresult = (event) => {
-    const text = event.results[0][0].transcript;
-    resultElement.value = text;
-    addOrigin(text);
-    translateAndSend(text, fromLangSelect.value, toLangSelect.value);
-};
-
-recognition.onend = () => {
-    statusElement.textContent = "";
-};
-
-recognition.onerror = (event) => {
-    statusElement.textContent = `エラー: ${event.error}`;
-};
 
 // 音声認識の開始
 const startSpeech = () => {
