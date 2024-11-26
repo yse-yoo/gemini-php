@@ -1,6 +1,12 @@
 <?php
 // env.php を読み込み
 require_once '../../env.php';
+require_once '../../lib/Lang.php';
+
+// CORS設定
+header("Access-Control-Allow-Origin: *"); // 必要に応じて "*" を特定のオリジンに変更
+header("Access-Control-Allow-Methods: POST, GET, OPTIONS");
+header("Access-Control-Allow-Headers: Content-Type, Authorization");
 
 // PHPでPOSTリクエストからデータを受け取る
 $postData = json_decode(file_get_contents('php://input'), true);
@@ -25,33 +31,13 @@ header('Content-Type: application/json');
 $json = json_encode($data);
 echo $json;
 
-function getLanguageByCode($code)
-{
-    $languages = [
-        ['code' => 'ja-JP', 'name' => 'Japanese'],
-        ['code' => 'en-US', 'name' => 'English'],
-        ['code' => 'fr-FR', 'name' => 'French'],
-        ['code' => 'es-ES', 'name' => 'Spanish'],
-        ['code' => 'de-DE', 'name' => 'German'],
-        ['code' => 'zh-CN', 'name' => 'Chinese'],
-        ['code' => 'vi-VN', 'name' => 'Vietnamese'],
-        ['code' => 'ko-KR', 'name' => 'Korian'],
-    ];
-    foreach ($languages as $language) {
-        if ($language['code'] === $code) {
-            return $language['name'];
-        }
-    }
-    return null;
-}
-
 function createByAI($origin, $fromLang, $toLang)
 {
     // Google APIキー
     $api_key = GEMINI_API_KEY;
 
-    $fromLang = getLanguageByCode($fromLang);
-    $toLang = getLanguageByCode($toLang);
+    $fromLang = Lang::getByCode($fromLang);
+    $toLang = Lang::getByCode($toLang);
 
     $prompt = "Please translate from {$fromLang} to {$toLang} 
     without bracket character.

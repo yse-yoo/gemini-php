@@ -1,16 +1,7 @@
 <?php
-$langs = [
-    'ja-JP' => 'Japanese',
-    'en-US' => 'English',
-    'fr-FR' => 'French',
-    'de-DE' => 'German',
-    'zh-CN' => 'Chinese',
-    'vi-VN' => 'Vietnamese',
-    'ko-KR' => 'Korian',
-];
-
-$defaultFromLang = 'ja-JP';
-$defaultToLang = 'en-US';
+require_once 'lib/Lang.php';
+$langs = Lang::$languages;
+$defaultLang = 'ja-JP';
 
 function selected($value, $selected)
 {
@@ -38,19 +29,10 @@ function selected($value, $selected)
         <div class="bg-white my-2 shadow-md rounded-lg px-6 py-3">
             <div class="flex">
                 <div>
-                    <label for="fromLang" class="text-gray-800 font-semibold">翻訳前の言語</label>
-                    <select id="fromLang" class="bg-white border border-gray-300 rounded-md p-2" onchange="updateFromLang()">
-                        <?php foreach ($langs as $value => $lang): ?>
-                            <option value="<?= $value ?>" <?= selected($defaultFromLang, $value) ?>><?= $lang ?></option>
-                        <?php endforeach ?>
-                    </select>
-                </div>
-                <div class="ml-5">
-                    <label for="toLang" class="text-gray-800 font-semibold">翻訳後の言語</label>
-
-                    <select id="toLang" class="bg-white border border-gray-300 rounded-md p-2" onchange="updateToLang()">
-                        <?php foreach ($langs as $value => $lang): ?>
-                            <option value="<?= $value ?>" <?= selected($defaultToLang, $value) ?>><?= $lang ?></option>
+                    <label for="lang" class="text-gray-800 font-semibold">言語</label>
+                    <select id="lang" class="bg-white border border-gray-300 rounded-md p-2">
+                        <?php foreach ($langs as $lang): ?>
+                            <option value="<?= $lang['code'] ?>" <?= selected($defaultLang, $lang['code']) ?>><?= $lang['name'] ?></option>
                         <?php endforeach ?>
                     </select>
                 </div>

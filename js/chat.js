@@ -2,8 +2,7 @@
 const startButton = document.getElementById('startButton');
 const inputTextElement = document.getElementById('inputText');
 const statusElement = document.getElementById('status');
-const fromLangSelect = document.getElementById('fromLang');
-const toLangSelect = document.getElementById('toLang');
+const langSelect = document.getElementById('lang');
 const chatHistoryElement = document.getElementById('chatHistory');
 
 // Socket IO開始
@@ -19,7 +18,6 @@ if ('webkitSpeechRecognition' in window) {
     alert("このブラウザは音声認識をサポートしていません");
 }
 
-// recognition.lang = fromLangSelect.value;
 recognition.interimResults = false;
 
 recognition.onstart = () => {
@@ -31,9 +29,8 @@ recognition.onresult = (event) => {
     console.log("text:", text)
     if (text) {
         // 入力欄のテキストを取得
-        const fromLang = fromLangSelect.value;
-        const toLang = toLangSelect.value;
-        sendMessage(text, fromLang, toLang);
+        const lang = langSelect.value;
+        sendMessage(text, lang);
     }
 };
 
@@ -83,68 +80,82 @@ const addTranslation = (text, isOwnMessage = false) => {
     chatHistoryElement.appendChild(translationMessageDiv);
 };
 
-// fromLang の変更を反映
-function updateFromLang() {
-    recognition.lang = fromLangSelect.value;
-    console.log("音声認識の言語が変更されました:", fromLangSelect.value);
-}
-
-// toLang の変更を反映
-function updateToLang() {
-    console.log("翻訳後の言語が変更されました:", toLangSelect.value);
+// lang の変更を反映
+function updateLang() {
+    recognition.lang = langSelect.value;
+    console.log("音声認識の言語が変更されました:", langSelect.value);
 }
 
 async function onSendMessage() {
     const message = inputTextElement.value;
-    const fromLang = fromLangSelect.value;
-    const toLang = toLangSelect.value;
-
-    console.log(message, fromLang, toLang)
+    const lang = langSelect.value;
+    console.log(message, lang)
 
     statusElement.textContent = "";
     if (!message) {
         statusElement.textContent = "メッセージを入力してください";
         return;
     }
-    await sendMessage(message, fromLang, toLang);
+    await sendMessage(message, lang);
 }
 
 // メッセージをサーバーに送信する関数
-async function sendMessage(message, fromLang, toLang) {
+async function sendMessage(message, lang) {
     if (!message) return;
-    if (!fromLang) return;
-    if (!toLang) return;
 
     // チャットに翻訳前のテキストを追加
     addOrigin(message, true);
 
-    // 翻訳を行い、翻訳されたテキストをサーバーに送信
+    // チャットメッセージ
+    socket.emit('message', { original: message, lang: lang });
+}
+
+const translateMessage = (data) => {
+    console.log(data)
+    if (data) {
+        // 他のユーザーからのメッセージを表示
+        addOrigin(data.origin, false);
+        // 翻訳後のメッセージ表示
+        addTranslation(data.translate, false);
+        // 音声読み上げ
+        speakTranslation(data.translate, data.toLang);
+    } else {
+        statusElement.textContent = "翻訳できませんでした";
+    }
+}
+
+/**
+ * 翻訳
+ */
+const translate = async (text, fromLang, toLang) => {
     try {
+        statusElement.textContent = "翻訳中...";
+
         const response = await fetch(TRANSLATION_URI, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                origin: message,
+                origin: text,
                 fromLang: fromLang,
                 toLang: toLang
             })
-        })
-        // 入力欄をクリア
-        const data = await response.json();
-        const translatedText = data.translate || "翻訳エラー";
+        });
 
-        if (translatedText) {
-            // 翻訳されたテキストをチャットに追加
-            addTranslation(translatedText, true);
-            // チャットメッセージ
-            socket.emit('message', { original: message, translated: translatedText });
+        statusElement.textContent = "";
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
         }
+        const data = await response.json();
+        console.log(data);
+        translateMessage(data);
     } catch (error) {
-        console.error('翻訳エラー:', error);
+        console.error('Fetch error:', error);
+        return null; // エラー時も値を返す
     }
-}
+};
+
 
 // TODO: Chromeで利用できない
 // 翻訳結果を音声で読み上げ
@@ -157,18 +168,28 @@ const speakTranslation = (text, lang) => {
 };
 
 // サーバーからのメッセージを受信
-socket.on('message', (msg) => {
-    // 他のユーザーからのメッセージを表示
-    addOrigin(msg.original, false);
-    addTranslation(msg.translated, false);
-
-    // 音声読み上げ
-    // TODO: send chat lang
-    speakTranslation(msg.translated, fromLangSelect.value);
+socket.on('message', async (msg) => {
+    console.log(msg)
+    const toLang = langSelect.value;
+    if (!msg.original) {
+        statusElement.textContent = "送信元のメッセージがありません";
+        return;
+    }
+    if (!msg.lang) {
+        statusElement.textContent = "送信元の言語がありません";
+        return;
+    }
+    if (!toLang) {
+        statusElement.textContent = "翻訳する言語が選択されていません";
+        return;
+    }
+    // 翻訳
+    await translate(msg.original, msg.lang, toLang);
 });
+
 
 // 音声認識の開始
 const startSpeech = () => {
-    recognition.lang = fromLangSelect.value;
+    recognition.lang = langSelect.value;
     recognition.start();
 };
