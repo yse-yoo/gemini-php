@@ -17,7 +17,7 @@ function selected($value, $selected)
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chat</title>
     <!-- Socket.IOクライアントスクリプトを読み込む -->
-    <script src="http://localhost:3000/socket.io/socket.io.js"></script>
+    <script src="https://cdn.socket.io/4.6.1/socket.io.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 
